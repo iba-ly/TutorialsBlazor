@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Tutorial.Kudvenkad.Api.Contexts;
 
-namespace Tutorials.Kudvenkat.Blazor
+namespace Tutorial.Kudvenkad.Api
 {
     public class Startup
     {
@@ -23,8 +26,8 @@ namespace Tutorials.Kudvenkat.Blazor
 
         public void ConfigureServices ( IServiceCollection services )
         {
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
+            services.AddControllers();
+            services.AddDbContext<EmployeeDbContext>( op => op.UseSqlServer( Configuration.GetConnectionString( nameof( EmployeeDbContext ) ) ) );
         }
 
         public void Configure ( IApplicationBuilder app, IWebHostEnvironment env )
@@ -33,21 +36,16 @@ namespace Tutorials.Kudvenkat.Blazor
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseExceptionHandler( "/Error" );
-                app.UseHsts();
-            }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseAuthorization();
+
             app.UseEndpoints( endpoints =>
              {
-                 endpoints.MapBlazorHub();
-                 endpoints.MapFallbackToPage( "/_Host" );
+                 endpoints.MapControllers();
              } );
         }
     }
