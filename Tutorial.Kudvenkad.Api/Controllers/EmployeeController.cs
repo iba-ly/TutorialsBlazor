@@ -56,14 +56,22 @@ namespace Tutorial.Kudvenkad.Api.Controllers
         {
             try
             {
-                var res = await employeeRepositry.Add(employee);
 
-                if ( res == null )
+                if ( employee == null )
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
+
+                var isEx = employeeRepositry.GetEmployeeByEmail(employee.Email);
+                if( isEx != null )
+                {
+                    ModelState.AddModelError( nameof( employee.Email ), "Ex" );
+                    return BadRequest(ModelState);
+                }
+                var res = await employeeRepositry.Add(employee);
+                
+
                 return CreatedAtAction( nameof( GetEmployee ), new { id = employee.ID }, employee );
-                //return res;
             }
             catch ( Exception )
             {

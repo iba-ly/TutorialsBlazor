@@ -11,12 +11,18 @@ namespace Tutorial.Kudvenkad.Api.Repositries.EmployeeRepo
 
     public interface IEmployeeRepositry : IRepositryBase<Employee>
     {
+        Task<Employee> GetEmployeeByEmail ( string email );
     }
 
     public class EmployeeRepositry : RepositryBase<Employee>, IEmployeeRepositry
     {
         public EmployeeRepositry ( EmployeeDbContext dbContext ) : base( dbContext )
         {
+        }
+
+        public async Task<Employee> GetEmployeeByEmail ( string email )
+        {
+            return await dbContext.Employees.FirstOrDefaultAsync(x=> x.Email == email);
         }
     }
 
